@@ -43,7 +43,7 @@ class ArgParserTester < ArgParser
      testcases.each do |path|
        puts "input:"
        puts File.read(path)
-       puts "output"
+       puts "output:"
        system "cat #{path} | #{runner} #{script_path}"
        puts ""
       end

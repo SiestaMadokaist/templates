@@ -1,4 +1,7 @@
-3
-OX|OO
-OX|XO
-OO|XX
+6
+XO|XO
+OO|XO
+OO|XO
+XX|XX
+OX|XX
+XO|OO
