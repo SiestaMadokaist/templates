@@ -1,4 +1,0 @@
-3
-XX|OX
-OX|XX
-OO|OO

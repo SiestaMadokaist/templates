@@ -1,9 +1,0 @@
-8
-XO|OO
-XO|XO
-OX|XO
-OO|XO
-OX|OO
-XX|XO
-XX|OX
-XO|XO
