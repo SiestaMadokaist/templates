@@ -1,6 +1,6 @@
 require "memoist"
 require "hashie"
-require File.expand_path("../base.rb", __FILE__)
+require File.expand_path("../scripts/base.rb", __FILE__)
 class A < Problem
   def n
     random_int(1, 10)

@@ -1,4 +1,5 @@
 require File.expand_path("../base", __FILE__)
+require "date"
 class ArgParserTester < ArgParser
   class << self
     def params
@@ -44,8 +45,12 @@ class ArgParserTester < ArgParser
        puts "input:"
        puts File.read(path)
        puts "output:"
+       start = DateTime.now
        system "cat #{path} | #{runner} #{script_path}"
-       puts ""
+       stop = DateTime.now
+       delay = -(start.to_time.to_f - stop.to_time.to_f)
+       puts "running for #{ "%03f" % [delay]}s"
+       puts
       end
     end
   end
