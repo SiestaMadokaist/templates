@@ -1,4 +1,5 @@
 usage:
+
     create test with predetermined logic to generate the testcase:
     ruby scripts/problems.rb --problem=A --tc=10
 
