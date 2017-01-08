@@ -28,6 +28,10 @@ class ArgParserTester < ArgParser
       Dir["testcases/#{problem}*.txt"]
     end
 
+    def expectations
+      Dir["expectations/#{problem}*.txt"]
+    end
+
     def runner
       arguments[:runner]
     end
@@ -40,17 +44,27 @@ class ArgParserTester < ArgParser
       "solutions/#{script}"
     end
 
+    def safe_read(path)
+      begin
+        File.read(path)
+      rescue
+        ""
+      end
+    end
+
     def run!
-     testcases.each do |path|
-       puts "input:"
-       puts File.read(path)
-       puts "output:"
-       start = DateTime.now
-       system "cat #{path} | #{runner} #{script_path}"
-       stop = DateTime.now
-       delay = -(start.to_time.to_f - stop.to_time.to_f)
-       puts "running for #{ "%03f" % [delay]}s"
-       puts
+      testcases.zip(expectations).each do |testpath, expectpath|
+        puts "input: #{testpath}"
+        puts File.read(testpath)
+        puts "output:"
+        start = DateTime.now
+        system "cat #{testpath} | #{runner} #{script_path}"
+        # puts "expected:"
+        # puts safe_read(expectpath)
+        stop = DateTime.now
+        delay = -(start.to_time.to_f - stop.to_time.to_f)
+        puts "running for #{ "%03f" % [delay]}s"
+        puts
       end
     end
   end

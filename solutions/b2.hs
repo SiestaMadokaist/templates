@@ -24,13 +24,20 @@ module Main where
           toBool (Just _) = True
           toBool Nothing = False
 
-  check :: Int -> Int -> Int -> Bool
-  check k r n = (k * n) `mod` 10 == r
+  p2 :: Int -> Int
+  p2 x = [1, 2, 4, 3] !! (x `mod` 4)
 
-  solve :: Int -> Int -> [Int]
-  solve k r = map (check k r) [1..10]
+  p3 :: Int -> Int
+  p3 x = [1, 3, 4, 2] !! (x `mod` 4)
+
+  p4 :: Int -> Int
+  p4 x = [1, 4] !! (x `mod` 2)
 
   main :: IO()
   main = do
-    [k, r] <- getLine >>= return . (map readInt) . words
-    print $ solve k r
+    c <- getLine >>= return . head . reverse
+    let s = [c]
+        x = readInt s
+    print $ (1 + (p2 x) + (p3 x) + (p4 x)) `mod` 5
+
+

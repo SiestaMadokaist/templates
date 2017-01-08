@@ -24,37 +24,85 @@ module Main where
           toBool (Just _) = True
           toBool Nothing = False
 
-  considerSeats :: String -> (Bool, Bool)
-  considerSeats ('O':'O':_) = (True, False)
-  considerSeats (_:_:'|':'O':'O':_) = (False, True)
-  considerSeats _ = (False, False)
+  data Query = Query { degree :: Int, p :: Point } deriving (Show, Ord, Eq)
+  data Point = Point { x :: Int, y :: Int} deriving (Show, Ord, Eq)
 
-  transform :: (Bool, Bool) -> String -> String
-  transform (True, False) (a:b:s) = '+':'+':s
-  transform (False, True) (a:b:s) =  a:b:"|++"
+  qFromArr :: [Int] -> Query
+  qFromArr (d:x:y:_) = Query d (Point x y)
 
-  reshow :: Bool -> [((Bool, Bool), String)] -> [String] -> [String]
-  reshow _ [] accumulator = accumulator
-  reshow True ((_, s):xs) accumulator                   = reshow True xs (s:accumulator)
-  reshow False ((pred@(True, False), s):xs) accumulator = reshow True xs ((transform pred s):accumulator)
-  reshow False ((pred@(False, True), s):xs) accumulator = reshow True xs ((transform pred s):accumulator)
-  reshow False ((pred@(False, False), s):xs) accumulator  = reshow False xs (s:accumulator)
+  qDist :: Query -> Float
+  qDist (Query _ (Point x y)) =
+    let dx = x - 50
+        dy = y - 50
+        dx2 = (fromIntegral (dx * dx)) :: Float
+        dy2 = (fromIntegral (dy * dy)) :: Float
+        in sqrt $ dx2 + dy2
 
-  hasTrue :: (Bool, Bool) -> Bool
-  hasTrue (False, False) = False
-  hasTrue _ = True
+  q1 :: Int -> Int -> Float
+  q1 x y
+    | x == y && x == 50 = 0
+    | otherwise =
+      let dx = (fromIntegral (x - 50)) :: Float
+          dy = (fromIntegral (y - 50)) :: Float
+          dst = sqrt (dx * dx + dy * dy)
+          in (pi / 2) - (acos (dx / dst))
+
+  q2 :: Int -> Int -> Float
+  q2 x y
+    | x == y && x == 50 = 0
+    | otherwise =
+      let dx = (fromIntegral (x - 50)) :: Float
+          dy = (fromIntegral (50 - y)) :: Float
+          dst = sqrt (dx * dx + dy * dy)
+          in (acos (dx / dst)) 
+
+  q3 :: Int -> Int -> Float
+  q3 x y
+    | x == y && x == 50 = 0
+    | otherwise =
+      let dx = (fromIntegral (50 - x)) :: Float
+          dy = (fromIntegral (50 - y)) :: Float
+          dst = sqrt (dx * dx + dy * dy)
+          in (pi / 2) - (acos (dx / dst)) 
+
+  q4 :: Int -> Int -> Float
+  q4 x y
+    | x == y && x == 50 = 0
+    | otherwise =
+      let dx = (fromIntegral (50 - x)) :: Float
+          dy = (fromIntegral (y - 50)) :: Float
+          dst = sqrt (dx * dx + dy * dy)
+          in (acos (dx / dst))
+
+  qDeg :: Query -> Float
+  qDeg (Query _ (Point x y))
+    | x >= 50 && y >= 50 = q1 x y
+    | x >= 50 && y <= 50 = (q2 x y) + (pi / 2)
+    | x <= 50 && y <= 50 = (q3 x y) + (pi )
+    | x <= 50 && y >= 50 = (q4 x y) + (pi / 2) + (pi)
+
+  qPercentage :: Query -> Float
+  qPercentage q = (qDeg q) / (2 * pi) * 100
+
+  qWithin :: Query -> Bool
+  qWithin q@(Query d _) = ((fromIntegral d) :: Float) > (qPercentage q)
+
+  qBlack :: Query -> Bool
+  qBlack q = (qWithin q) && (qDist q <= 50)
+
+  qColor :: Query -> String
+  qColor q
+    | qBlack q = "black"
+    | otherwise = "white"
+
+  printerDecorator :: Int -> [String] -> [String]
+  printerDecorator n [] = []
+  printerDecorator n (x:xs) = ("Case #" ++ (show n) ++ ": " ++ x):(printerDecorator (n + 1) xs)
 
   main :: IO()
   main = do
     n <- getLine >>= return . readInt
-    seats <- readMultilineInput n return
-    let consideredSeats = considerSeats `map` seats
-        hasAns = any hasTrue consideredSeats
-        ans = consideredSeats `zip` seats
-        action = case hasAns of
-          False -> putStrLn "NO"
-          True -> do
-            putStrLn "YES"
-            mapM_ putStrLn $ reverse $ reshow False ans []
-    -- putStrLn $ show ans
-    action
+    queries <- readMultilineInput n (return . qFromArr . (map readInt) . words)
+    let colors = map qColor queries
+        outputs = printerDecorator 1 colors
+    forM_ outputs putStrLn

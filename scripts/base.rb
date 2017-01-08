@@ -4,7 +4,7 @@ class Problem
   extend Memoist
 
   # should return array of string
-  def generate!
+  def generated
     raise NotImplementedError
   end
 
@@ -13,6 +13,11 @@ class Problem
   def random_float(start, stop)
     diff = stop - start
     (Random.rand * diff) + start
+  end
+
+  # TODO
+  def random_string(length=nil)
+    ""
   end
 
   # @param start [Integer]
@@ -32,9 +37,10 @@ class Problem
 
   # @param sequence_number [Integer]
   def run!(sequence_number)
-    lines = generate!.join("\n")
+    lines = generated.join("\n")
+    sn = "%03i"% [sequence_number]
     class_name = self.class.name
-    File.open("testcases/#{class_name}#{sequence_number}.txt", "wb"){|f| f.write(lines)  }
+    File.open("testcases/#{class_name}#{sn}.txt", "wb"){|f| f.write(lines)  }
   end
 
 end

@@ -12,6 +12,9 @@ module Main where
   readInt :: String -> Int
   readInt s = read s :: Int
 
+  readInteger :: String -> Integer
+  readInteger s = read s :: Integer
+
   readMultilineInput :: Int -> (String -> IO a) -> IO [a]
   readMultilineInput n transformer = replicateM n (getLine >>= transformer)
 
@@ -24,13 +27,8 @@ module Main where
           toBool (Just _) = True
           toBool Nothing = False
 
-  check :: Int -> Int -> Int -> Bool
-  check k r n = (k * n) `mod` 10 == r
-
-  solve :: Int -> Int -> [Int]
-  solve k r = map (check k r) [1..10]
-
   main :: IO()
   main = do
-    [k, r] <- getLine >>= return . (map readInt) . words
-    print $ solve k r
+    n <- getLine >>= return . readInteger
+    xs <- getLine
+    putStrLn $ "OK"
